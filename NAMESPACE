@@ -1,0 +1,7 @@
+export("moult", "date2days", "day2date", "ms2pfmg") 
+
+  S3method("print", "moult")
+  S3method("predict", "moult")
+  S3method("summary", "moult")
+  S3method("logLik", "moult")
+  S3method("vcov", "moult")
