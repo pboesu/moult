@@ -1,7 +1,12 @@
-export("moult", "date2days", "day2date", "ms2pfmg") 
+import(Formula)
 
-  S3method("print", "moult")
-  S3method("predict", "moult")
-  S3method("summary", "moult")
-  S3method("logLik", "moult")
-  S3method("vcov", "moult")
+export("moult", "date2days", "ms2pfmg", "predict.moult") 
+
+S3method("print", "moult")
+S3method("predict", "moult")
+S3method("summary", "moult")
+S3method("logLik", "moult")
+S3method("vcov", "moult")
+S3method("print", "summary.moult")
+S3method("coef", "moult")
+
