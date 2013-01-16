@@ -1,5 +1,9 @@
 NEWS for package moult 
 
+Changes in version 1.2
+
+  -- Added reference to article in Journal of Statistical Software. 
+
 Changes in version 1.1
 
   -- The 'weaver' data set now contains only adult birds, and only observations 

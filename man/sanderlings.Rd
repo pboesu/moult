@@ -18,7 +18,7 @@
 \source{Underhill and Zucchini (1998)}
 
 \references{Underhill, L. G. and Zucchini, W. (1988) A model for avian
-  primary moult. Ibis \bold{130}, 358--372.}
+	primary moult. Ibis \bold{130}, 358--372.}
 
 \examples{
 data(sanderlings)

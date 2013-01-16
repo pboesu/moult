@@ -95,7 +95,12 @@ method.
       see \code{optim} for details.}
   }
 
-\references{Underhill, L. G. and Zucchini, W. (1988) A model for avian
+\references{Erni, B., Bonnevie, B. T., Oschadleus, H.-D., Altwegg,
+        R. and Underhill, L. G. (2013) moult: An R package to analyze
+        moult in birds. Journal of Statistical Software, \bold{52}(8), 1--23.
+        \url{http://www.jstatsoft.org/v52/i08/}
+
+  Underhill, L. G. and Zucchini, W. (1988) A model for avian
   primary moult. Ibis \bold{130}, 358--372.
 
   Underhill, L. G. and Zucchini, W. and Summers, R. W. (1990) A model

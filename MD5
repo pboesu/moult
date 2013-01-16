@@ -1,6 +1,6 @@
-ae004fed341e4ddfbb3bd1dd19ceeed0 *DESCRIPTION
+b1663ea0e42010b0c4a3bc0f4d9ec320 *DESCRIPTION
 8efc845b34259685a32562ae56a2a33d *NAMESPACE
-447fd864ad6efe267cfc97918cb0457e *NEWS
+6ca9458625a69bde41ecb70394c50589 *NEWS
 5b17fbadc8ab21993a554ea2914ffa59 *R/coef.moult.R
 f03444efe680e7f1bca9cf6607735124 *R/date2days.R
 682d4d4af2aecdf11198ce53bc37660f *R/logLik.moult.R
@@ -13,10 +13,11 @@ a2cd82fac9cefa747547a5524085f4e9 *R/print.summary.moult.R
 c3c00eae8a06bc11896b8324ea8262ed *R/vcov.moult.R
 d475e592b78a435c63a723228a3dd172 *data/sanderlings.rda
 1efbefbd49699876b1e021e14b6656b9 *data/weavers.RData
+f9367598ea2de0d89ceb38439307d6c4 *inst/CITATION
 0a87547d6012bce6e7a5c79136d2a854 *man/date2days.Rd
-348f62d2b045e7facd0067f14f95eb78 *man/moult-package.Rd
-f1945bb8953ce0a97323538d7d6fe60d *man/moult.Rd
+009f311bf73d98e398cd4549d5c6c587 *man/moult-package.Rd
+a34869465edd810cb284973cfe0bc5b0 *man/moult.Rd
 319755e6bfa1d9b97cd3cf31e8ad2e80 *man/ms2pfmg.Rd
-c1caec4db8e4adcf0bbd44d3c04078b1 *man/predict.moult.Rd
-53f0d28baa1cd84f86e72f822dc4baa4 *man/sanderlings.Rd
+1f80b67bdcb27c29f7cb09c471148459 *man/predict.moult.Rd
+c9decb22c5cd9226baafd4a3300599b2 *man/sanderlings.Rd
 09feda02f66f16ace3466cf0524a1bca *man/weavers.Rd
