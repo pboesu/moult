@@ -21,14 +21,12 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS")
   mm <- model.matrix(FF, rhs = 3, data = f.dat)
   md <- model.matrix(FF, rhs = 2, data = f.dat)
 
-  msd <- model.matrix(FF, rhs = 4, mf)
-  sdev <- as.factor(msd)      
+  msd <- model.matrix(FF, rhs = 4, data = f.dat)
 
-  if(length(levels(sdev)) > 1) {
-    msd <- model.matrix(~ sdev - 1, data = f.dat)
-  } else {
-    msd <- model.matrix(~ 1, data = f.dat)
-  }
+  if (dim(msd)[2] > 1) {
+    FF <- update(FF, . ~ . | . | . | . -1)
+    msd <- model.matrix(FF, rhs = 4, data = f.dat)
+  } 
   
   Day <- model.matrix(FF, rhs = 1, data = f.dat)
   PFMG <- as.vector(model.part(FF, lhs = 1, data = f.dat))
@@ -37,15 +35,15 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS")
   MTime <- Day[PFMG > 0 & PFMG < 1]
   M1 <- Day[PFMG == 1]
   
-  mf0 <- matrix(mm[PFMG == 0,], ncol = ncol(mm))                    # mean start day, 
+  mf0 <- matrix(mm[PFMG == 0,], ncol = ncol(mm))                 # mean start day 
   mfInd <- matrix(mm[PFMG > 0 & PFMG < 1,], ncol = ncol(mm))
   mf1 <- matrix(mm[PFMG == 1,], ncol = ncol(mm))
  
   df0 <- matrix(md[PFMG == 0,], ncol = ncol(md))                     # duration
   dfInd <- matrix(md[PFMG > 0 & PFMG < 1,], ncol = ncol(md))
-  df1 <- matrix(md[PFMG == 1,],ncol=ncol(md))
+  df1 <- matrix(md[PFMG == 1,], ncol = ncol(md))
  
-  sd0 <- matrix(msd[PFMG == 0,], ncol = ncol(msd))                       # SD(start)
+  sd0 <- matrix(msd[PFMG == 0,], ncol = ncol(msd))                   # SD(start)
   sdInd <- matrix(msd[PFMG > 0 & PFMG < 1,], ncol = ncol(msd))
   sd1 <- matrix(msd[PFMG == 1,], ncol = ncol(msd))
 
@@ -106,6 +104,7 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS")
     },
 
     { # ----- data of type 3 -----
+        
       LogLikM <- function(p)
       { qq <- sum(log((dfInd %*% p[1:p1]) * dnorm(MTime - (MInd * (dfInd %*% p[1:p1])),
                                                   mean = mfInd%*%p[(p1 + 1):(p1 + p2)], 
@@ -181,8 +180,13 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS")
   fit <- optim(par = InitP, LogLikM, hessian = TRUE, control = list(maxit = 100000), method = method)
 
    # ----- 3. Return output -----
- 
+
+  vcnames <- c(paste("d.", colnames(md), sep = ""), 
+               paste("s.", colnames(mm), sep = ""), 
+               paste("sd.", colnames(msd), sep = ""))
   names(fit$par) <- paramnames
+  colnames(fit$hessian) <- vcnames
+  rownames(fit$hessian) <- vcnames
 
   out <- list("estimates" = fit$par, "likelihood" = -fit$value, "convergence" = fit$convergence, 
               "message" = fit$message, "hessian" = fit$hessian)
@@ -205,13 +209,8 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS")
   vcov <- solve(as.matrix(fit$hessian))
   dvc <- diag(vcov)
  
- # if (all(dvc > 0))
- #   { 
-      ses <- sqrt(dvc)
-      ses[(p1 + p2 + 1):no.params] <- exp(coefsd) * sqrt(ses[(p1 + p2 + 1):no.params])
- #   } else
- #   { ses[1:no.params] <- NA
- #   }
+  ses <- sqrt(dvc)
+  ses[(p1 + p2 + 1):no.params] <- exp(coefsd) * sqrt(ses[(p1 + p2 + 1):no.params])
   
   names(ses) <- paramnames
    

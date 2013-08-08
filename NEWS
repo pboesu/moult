@@ -1,5 +1,12 @@
 NEWS for package moult 
 
+Changes in version 1.3
+
+  -- Bug fix: moult function did not work when added covariates for standard deviation in start date. 
+     Now works, but still only for categorical covariates. 
+
+  -- Improved row and column names for covariance matrix of parameter estimates. 
+
 Changes in version 1.2
 
   -- Added reference to article in Journal of Statistical Software. 
