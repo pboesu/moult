@@ -1,5 +1,9 @@
 NEWS for package moult 
 
+Changes in version 1.4
+
+  -- Fixed error in predict.moult.
+
 Changes in version 1.3
 
   -- Bug fix: moult function did not work when added covariates for standard deviation in start date. 

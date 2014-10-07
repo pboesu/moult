@@ -1,11 +1,12 @@
 \name{predict.moult}
 \alias{predict.moult}
 \alias{coef.moult}
-\title{Predict method for moult Models}
+\title{Predict method for moult models}
 
-\description{Will predict either the proportion of birds in a certain moult 
-             stage (as defined in intervals) on a specified day, or the average 
-             moult score on a specified day}
+\description{Predict either the proportion of birds in a certain moult 
+             stage (as defined in intervals) on a specified day, the average 
+             moult score on a specified day, or start and/or duration of moult 
+             for given covariate patterns}
 
 \usage{
   \method{predict}{moult}(object, newdata, predict.type = "prob",
@@ -20,8 +21,8 @@
   \item{intervals}{length of moult categories for
     which probabilities/proportions should be calculated.  The default (= 0.1) 
     will calculate the probability that a bird will fall in this moult category
-    on the specified day for each of the following categories: 0, 0 to < 0.1, 
-    0.1 to < 0.2, 0.2 to < 0.3, ..., 0.9 to < 1.0, 1.}
+    on the specified day for each of the following categories: 0, (0, 0.1), 
+    [0.1, 0.2), [0.2, 0.3), ..., [0.9, 1.0), 1.}
   \item{...}{other arguments passed to the predict method}
 }
 
@@ -33,16 +34,23 @@
     \item{"prob"}{default, the proportion of birds in
       each of the moult categories as defined by intervals
       is predicted. }
+    \item{"duration"}{predicts the duration of moult
+      for the covariate combinations defined in \code{newdata},
+      with standard errors.}
     \item{"start"}{predicts the mean start date of moult
-      for the covariate combination defined in \code{newdata},
+      for the covariate combinations defined in \code{newdata},
       with standard errors. }
+    \item{"both"}{predicts both mean start date of moult and 
+      duration of moult for the covariate combinations defined in 
+      \code{newdata}, with standard errors. Also, covariance of duration and start date estimates is given.}
   }
 }  
 \value{
-  \item{M}{if \code{predict.type = TRUE}, or \code{newdata} is missing, the
-    expected moult scores at the specified days are returned,
-    else a matrix of predicted probabilities for being in each of the
-    moult categories defined by intervals.}
+  \item{M}{If \code{predict.type = "response"}, or \code{newdata} is missing, the expected moult scores at the specified days are returned.} 
+  
+  \item{}{If \code{predict.type = "prob"} a matrix of predicted probabilities for being in each of the moult categories defined by intervals.}
+    
+  \item{}{If \code{predict.type} equals "start" or "duration" or "both", the corresponding estimates (with standard errors) for each of the covariate patterns are returned.}
 }
 
 \references{Erni, B., Bonnevie, B. T., Oschadleus, H.-D., Altwegg,

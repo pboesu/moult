@@ -1,5 +1,7 @@
 import(Formula)
 
+importFrom(Matrix,bdiag)
+
 export("moult", "date2days", "ms2pfmg", "predict.moult") 
 
 S3method("print", "moult")
