@@ -1,5 +1,11 @@
 NEWS for package moult 
 
+Changes in version 2.0.0
+ 
+  -- Likelihood is calculated differently: not estimated by density but by integrating between y - 0.02 and y + 0.02, where y is the moult score, or PFMG.
+
+  -- 'moult' function now allows fixed parameters. 
+
 Changes in version 1.4
 
   -- Fixed error in predict.moult.
@@ -29,5 +35,5 @@ Changes in version 1.1
 
   -- 'moult' now has a 'data' argument, similar to 'lm' or 'glm'. 
 
-  -- 'predict.moult' can now be used for predicting mean starts date at different covariate settings. 
+  -- 'predict.moult' can now be used for predicting mean start dates at different covariate settings. 
 

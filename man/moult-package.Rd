@@ -3,13 +3,13 @@
 \docType{package}
 \title{Methods for Estimating Start and Duration of Moult in Birds}
 \description{Functions for estimating the duration and mean start date
-  for avian moult data, based on maximum likelihood.}
+    for avian moult data, based on maximum likelihood.}
 \details{
 \tabular{ll}{
 Package: \tab moult\cr
 Type: \tab Package\cr
-Version: \tab 1.1\cr
-Date: \tab 2012-06-07\cr
+Version: \tab 2.0.0\cr
+Date: \tab 2016-05-03\cr
 License: \tab GPL-2\cr
 LazyLoad: \tab yes\cr
 }

@@ -8,7 +8,8 @@
              moult score data by maximum likelihood.  Covariates 
              to model duration and start of moult are possible. }
 
-\usage{moult(formula, data, start = NULL, type = 2, method = "BFGS")}
+\usage{moult(formula, data, start = NULL, type = 2, method = "BFGS", fixed = NULL, 
+             fixed.val = NULL)}
     
 \arguments{
   \item{formula}{symbolic description of the model, see details.}
@@ -19,6 +20,8 @@
   \item{type}{integer (one of 1,2,3,4,5) referring to type of moult data
     and consequently model to be fitted (see details).}
   \item{method}{optimisation algorithm, passed to \code{\link{optim}}.}
+  \item{fixed}{logical vector specifying which parameter values to fix during optimization.}
+  \item{fixed.val}{numeric vector with values for the fixed parameters.}
 }
 
 \details{\code{formula} is specified in 5 parts: 
@@ -59,6 +62,8 @@ Zucchini (1998) and Underhill, Zucchini and Summers (1990)).
   are ignored.}
 }
 
+To \emph{fix parameters} \code{fixed} will be a logical vector, e.g. \code{fixed = c(F, F, T), fixed.val = 3.5} will fix the standard deviation in start date to exp(3.5) and only estimate the remaining two parameters. 
+
 \code{moult} uses the \R function \code{\link{optim}} to minimise the negative log-likelihood. 
 
 Note: The standard deviation parameters are estimated on the log-scale. Thus
@@ -97,15 +102,15 @@ method.
 
 \references{Erni, B., Bonnevie, B. T., Oschadleus, H.-D., Altwegg,
         R. and Underhill, L. G. (2013) moult: An R package to analyze
-        moult in birds. Journal of Statistical Software, \bold{52}(8), 1--23.
+        moult in birds. \emph{Journal of Statistical Software}, \bold{52}(8), 1--23.
         \url{http://www.jstatsoft.org/v52/i08/}
 
   Underhill, L. G. and Zucchini, W. (1988) A model for avian
-  primary moult. Ibis \bold{130}, 358--372.
+  primary moult. \emph{Ibis} \bold{130}, 358--372.
 
   Underhill, L. G. and Zucchini, W. and Summers, R. W. (1990) A model
   for avian primary moult-data types based on migration strategies and
-  an example using the Redshank \emph{Tringa totanus}. Ibis \bold{132},
+  an example using the Redshank \emph{Tringa totanus}. \emph{Ibis} \bold{132},
   118--123. }
 
 \author{Birgit.Erni <birgit.erni@uct.ac.za>}
