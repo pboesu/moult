@@ -1,10 +1,21 @@
 NEWS for package moult 
 
+moult 2.1.0
+
+- moult_alternative provides alternative parameterization, with halfway date instead of start of moult. Still in testing phase. At later stage will be incorporated into moult function.
+
+- Addition of prec parameter to define measurement precision of moult index (proportion of feather mass grown). 
+
+- Bug fix in type 3 likelihood, now more likely to complete optimization.
+
+- New vignette for individual primary analysis.
+
+
 Changes in version 2.0.0
  
-  -- Likelihood is calculated differently: not estimated by density but by integrating between y - 0.02 and y + 0.02, where y is the moult score, or PFMG.
+  - Likelihood is calculated differently: not estimated by density but by integrating between y - 0.02 and y + 0.02, where y is the moult score, or PFMG.
 
-  -- 'moult' function now allows fixed parameters. 
+  - 'moult' function now allows fixed parameters. 
 
 Changes in version 1.4
 

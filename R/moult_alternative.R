@@ -1,4 +1,4 @@
-moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
+moult_alternative <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
                   fixed = NULL, fixed.val = NULL, prec = 0.02) 
     
 { f.dat <- data.frame(data)
@@ -86,15 +86,19 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
             pstart <- p[(p1 + 1):(p1 + p2)]
             psd <- exp(p[(p1 + p2 + 1):no.params])
         
-            P <- sum(log(1 - pnorm(M0, mean = mf0 %*% pstart, 
+            P <- sum(log(1 - pnorm(M0 + 0.5 * (df0 %*% pdur),
+                                   mean = mf0 %*% pstart, 
                                    sd = sd0 %*% psd )))
             
-            Q <- sum (log(pnorm(MTime, mean = mfInd %*% pstart, 
+            Q <- sum (log(pnorm(MTime + 0.5 * (dfInd %*% pdur),
+                                mean = mfInd %*% pstart, 
                                 sd = sdInd %*% psd) - 
-                          pnorm(MTime - (dfInd %*% pdur), mean = mfInd %*% pstart, 
+                          pnorm(MTime - 0.5 * (dfInd %*% pdur),
+                                mean = mfInd %*% pstart, 
                                 sd = sdInd %*% psd)))
    	
-            R <- sum(log(pnorm(M1 - (df1 %*% pdur), mean = mf1 %*% pstart, 
+            R <- sum(log(pnorm(M1 - 0.5 * (df1 %*% pdur),
+                               mean = mf1 %*% pstart, 
                                sd = sd1 %*% psd)))
   
             loglik <- P + Q + R
@@ -121,21 +125,22 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
             pstart <- p[(p1 + 1):(p1 + p2)]
             psd <- exp(p[(p1 + p2 + 1):no.params])
         
-            P.p <- log ( 1 - pnorm(M0, mean = mf0 %*% pstart,
-                                   sd = sd0 %*% psd))
+            P.p <- log ( 1 - pnorm(M0 + 0.5 * (df0 %*% pdur),
+                                   mean = mf0 %*% pstart,
+                                   sd = sd0 %*% exp(psd)))
             P <- sum(P.p[P.p > -Inf])
    
             MIndmin <- pmax(0, MInd - prec)
             MIndmax <- pmin(MInd + prec, 1)
   
-            q <- sum(log(pnorm(MTime - MIndmin * (dfInd %*% pdur),
+            q <- sum(log(pnorm(MTime - (MIndmin - 0.5) * (dfInd %*% pdur),
                                mean = mfInd %*% pstart, 
                                sd = sdInd %*% psd) -
-                         pnorm(MTime - MIndmax * (dfInd %*% pdur),
+                         pnorm(MTime - (MIndmax - 0.5) * (dfInd %*% pdur),
                                mean = mfInd %*% pstart, 
                                sd = sdInd %*% psd)))
               
-            R <- sum ( log ( pnorm (M1 - (df1 %*% pdur), mean = mf1 %*% pstart, 
+            R <- sum ( log ( pnorm (M1 - 0.5 * (df1 %*% pdur), mean = mf1 %*% pstart, 
                                     sd = sd1 %*% psd) ))
 
             loglik <- P + q + R
@@ -165,16 +170,17 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
           MIndmin <- pmax(0, MInd - prec)
           MIndmax <- pmin(MInd + prec, 1)
        
-          qq <- sum(log(pnorm(MTime - MIndmin * (dfInd %*% pdur),
+          qq <- sum(log(pnorm(MTime - (MIndmin - 0.5) * (dfInd %*% pdur),
                               mean = mfInd %*% pstart, 
                               sd = sdInd %*% psd) -
-                        pnorm(MTime - MIndmax * (dfInd %*% pdur),
+                        pnorm(MTime - (MIndmax - 0.5) * (dfInd %*% pdur),
                               mean = mfInd %*% pstart, 
                               sd = sdInd %*% psd)))
       
-          Q <- sum(log(pnorm(MTime, mean = mfInd %*% pstart,
+          Q <- sum(log(pnorm(MTime + (dfInd %*% pdur / 2),
+                             mean = mfInd %*% pstart,
                              sd = sdInd %*% psd) - 
-                       pnorm(MTime - (dfInd %*% pdur),
+                       pnorm(MTime - (dfInd %*% pdur / 2),
                              mean = mfInd %*% pstart,
                              sd = sdInd %*% psd)))
 
@@ -213,21 +219,23 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
             MIndmin <- pmax(0, MInd - prec)
             MIndmax <- pmin(MInd + prec, 1)
        
-            qq <- sum(log(pnorm(MTime - MIndmin * (dfInd %*% pdur),
+            qq <- sum(log(pnorm(MTime - (MIndmin - 0.5) * (dfInd %*% pdur),
                                 mean = mfInd %*% pstart, 
                                 sd = sdInd %*% psd) -
-                          pnorm(MTime - MIndmax * (dfInd %*% pdur),
+                          pnorm(MTime - (MIndmax - 0.5) * (dfInd %*% pdur),
                                 mean = mfInd %*% pstart, 
                                 sd = sdInd %*% psd)))
   
-            P1 <- sum ( log (pnorm(MTime, mean = mfInd %*% pstart,
+            P1 <- sum ( log (pnorm(MTime + 0.5 * (dfInd %*% pdur),
+                                   mean = mfInd %*% pstart,
                                    sd = sdInd %*% psd)))
             
-            R <- sum ( log ( pnorm (M1 - (df1 %*% pdur), 
+            R <- sum ( log ( pnorm (M1 - 0.5 * (df1 %*% pdur), 
                                     mean = mf1 %*% pstart, 
                                     sd = sd1 %*% psd) ))
 
-            P2 <- sum ( log (pnorm(M1, mean = mf1 %*% pstart, 
+            P2 <- sum ( log (pnorm(M1 + 0.5 * (df1 * pdur),
+                                   mean = mf1 %*% pstart, 
                                    sd = sd1 %*% psd)))
 
             nobs <- sum(length(M1), length(MInd))
@@ -255,24 +263,25 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
             pstart <- p[(p1 + 1):(p1 + p2)]
             psd <- exp(p[(p1 + p2 + 1):no.params])
         
-            P <- sum ( log ( 1 - pnorm(M0, mean = mf0 %*% pstart, 
+            P <- sum ( log ( 1 - pnorm(M0 - 0.5 * (df0 %*% pdur),
+                                       mean = mf0 %*% pstart, 
                                        sd = sd0 %*% psd)))
     
-            R1 <- sum ( log ( 1 - pnorm (M0 - (df0 %*% pdur), 
+            R1 <- sum ( log ( 1 - pnorm (M0 - 0.5 * (df0 %*% pdur), 
                                          mean = mf0 %*% pstart, 
                                          sd = sd0 %*% psd) ))
 
             MIndmin <- pmax(0, MInd - prec)
             MIndmax <- pmin(MInd + prec, 1)
        
-            qq <- sum(log(pnorm(MTime - MIndmin * (dfInd %*% pdur),
+            qq <- sum(log(pnorm(MTime - (MIndmin - 0.5) * (dfInd %*% pdur),
                                 mean = mfInd %*% pstart, 
                                 sd = sdInd %*% psd) -
-                          pnorm(MTime - MIndmax * (dfInd %*% pdur),
+                          pnorm(MTime - (MIndmax - 0.5) * (dfInd %*% pdur),
                                 mean = mfInd %*% pstart, 
                                 sd = sdInd %*% psd)))
   
-            R2 <- sum ( log (1 - pnorm (MTime - (dfInd %*% pdur), 
+            R2 <- sum ( log (1 - pnorm (MTime - 0.5 * (dfInd %*% pdur), 
                                         mean = mfInd %*% pstart, 
                                         sd = sdInd %*% psd) ))
 
@@ -294,10 +303,14 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
     ## ===============================    
     ## ----- 2. Run optimisation -----
     ## ===============================
-    
+
+    start.init <- mean(MTime[MInd < 0.2])
+    dur.init <- mean(MTime[MInd > 0.8]) - start.init
+    sd.init <-  sd(MTime[MInd < 0.2]) 
+  
     if (missing(start))
-        InitP <- c(max(coef(Flin1)[2], 1), rep(0, times = p1 - 1),
-                   coef(Flin1)[1], rep(0, times = p2 - 1), 
+        InitP <- c(max(dur.init, 1), rep(0, times = p1 - 1),
+                   start.init + 0.5 * dur.init, rep(0, times = p2 - 1), 
                    rep(log(sd(MTime, na.rm = TRUE)), times = p3))
     else 
         InitP <- start

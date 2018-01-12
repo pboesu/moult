@@ -46,7 +46,7 @@ predict.moult <- function(object, newdata = NULL, predict.type = "prob", interva
            
               IM <- matrix(0, ncol = length(ints) - 1, nrow = length(day))
               rownames(IM) <- day
-              colnames(IM) <- paste(ints[1:length(ints) - 1], "-", ints[2:length(ints)])
+              colnames(IM) <- paste(ints[1:length(ints) - 1], "-", ints[2:length(ints)], sep = "")
               for (i in 2:length(ints))
                   { IM[,i-1] <- pnorm(day - md %*% p.dur * ints[i-1], mean = mm %*% p.mean, sd = msd %*% p.sd) - 
                         pnorm(day - md %*% p.dur * ints[i], mean = mm %*% p.mean, sd = msd %*% p.sd) 

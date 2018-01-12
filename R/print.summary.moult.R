@@ -35,7 +35,7 @@ print.summary.moult <- function(x, digits = max(3, getOption("digits") - 3), ...
       printCoefmat(sd.mat, digits = digits, signif.legend = FALSE)
 
       cat("\nLog-likelihood:", formatC(x$loglik, digits = digits), 
-            "on", x$n - x$df.residual, "Df\n")
+          "on", x$n - x$df.residual, "Df\n")
     }
 
     invisible(x)
