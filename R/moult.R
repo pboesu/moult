@@ -15,7 +15,7 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
   if (missing(data)) 
     f.dat <- model.frame(FF)
   
-  f.dat <- na.omit(f.dat)
+  #f.dat <- na.omit(f.dat)
   
   mf <- model.frame(FF, data = f.dat)
 
@@ -377,6 +377,7 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
                 residuals = residuals,
                 fitted.values = moult.est,
                 n = nobs,
+                na.action = attr(f.dat, "na.action"),
                 df.residual = nobs - no.params,
                 terms = list(full = FF, duration = formula.duration, mean = formula.mean,
                              sd = formula.sd), 

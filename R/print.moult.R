@@ -15,6 +15,11 @@ print.moult <- function(x, digits = max(3, getOption("digits") - 3), ...)      #
 
       cat("\n Coefficients for standard deviation in start date of moult:\n")
       print(x$coefficients$sd, digits = digits)
+      
+      if(!is.null(x$na.action)){
+      cat(paste("\n", naprint(x$na.action)))
+      }
+      
 
     }
 

@@ -36,6 +36,10 @@ print.summary.moult <- function(x, digits = max(3, getOption("digits") - 3), ...
 
       cat("\nLog-likelihood:", formatC(x$loglik, digits = digits), 
           "on", x$n - x$df.residual, "Df\n")
+      
+      if(!is.null(x$na.action)){
+        cat(paste("\n", naprint(x$na.action)))
+      }
     }
 
     invisible(x)
