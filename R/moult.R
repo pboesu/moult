@@ -17,20 +17,22 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
   
   #f.dat <- na.omit(f.dat)
   
-  mf <- model.frame(FF, data = f.dat)
+  mf <- model.frame(FF, data = f.dat)#this object is never used?!
 
-  mm <- model.matrix(FF, rhs = 3, data = f.dat)
-  md <- model.matrix(FF, rhs = 2, data = f.dat)
+  mm <- model.matrix(FF, rhs = 3, data = mf)
+  md <- model.matrix(FF, rhs = 2, data = mf)
 
-  msd <- model.matrix(FF, rhs = 4, data = f.dat)
+  msd <- model.matrix(FF, rhs = 4, data = mf)
 
   if (dim(msd)[2] > 1) {
     FF <- update(FF, . ~ . | . | . | . -1)
-    msd <- model.matrix(FF, rhs = 4, data = f.dat)
+    msd <- model.matrix(FF, rhs = 4, data = mf)
   } 
   
+
   Day <- model.frame(FF, rhs = 1, data = f.dat) 
   PFMG <- model.part(FF, lhs = 1, data = f.dat)
+#model matrices are constructed from the model.frame, rather than the f.dat object, this results in falling back onto the na.action argument of model.frame
   M0 <- Day[PFMG == 0, 2]
   MInd <- PFMG[PFMG > 0 & PFMG < 1]
   MTime <- Day[PFMG > 0 & PFMG < 1, 2]
@@ -377,7 +379,7 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
                 residuals = residuals,
                 fitted.values = moult.est,
                 n = nobs,
-                na.action = attr(f.dat, "na.action"),
+                na.action = attr(mf, "na.action"),
                 df.residual = nobs - no.params,
                 terms = list(full = FF, duration = formula.duration, mean = formula.mean,
                              sd = formula.sd), 

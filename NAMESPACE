@@ -2,7 +2,7 @@ import(Formula)
 
 importFrom(Matrix,bdiag)
 importFrom("stats", coef, lm, model.frame, model.matrix,
-           na.omit, optim, pnorm, printCoefmat, sd, update)
+           na.omit, naprint, optim, pnorm, printCoefmat, sd, update)
 
 export("moult", "date2days", "ms2pfmg", "predict.moult", "moult_alternative") 
 
