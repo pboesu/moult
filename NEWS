@@ -1,6 +1,13 @@
 NEWS for package moult 
 
-moult 2.1.0
+moult 2.2.0
+
+- Fixed error in the calculation of SE(SD in start of moult). Thanks to Les Underhill and Tanya Scott for picking this up. 
+
+- Moult scores in half steps can be converted to proportion of feather mass grown, e.g. "5 5 5 5 4.5 2 0 0 0" (ms2pfmg).
+ 
+
+Changes in version 2.1.0
 
 - moult_alternative provides alternative parameterization, with halfway date instead of start of moult. Still in testing phase. At later stage will be incorporated into moult function.
 

@@ -12,7 +12,7 @@ citEntry(entry = "Article",
   volume       = "52",
   number       = "8",
   pages        = "1--23",
-  url          = "http://www.jstatsoft.org/v52/i08/",
+  url          = "https://www.jstatsoft.org/v52/i08/",
 
   textVersion  =
   paste("Birgit Erni, Bo T. Bonnevie, Hans-Dieter Oschadleus, Res Altwegg, Les G. Underhill (2013).",

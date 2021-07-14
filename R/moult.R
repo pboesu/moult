@@ -361,7 +361,7 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
     rownames(vcov) <- vcnames
     
     ses <- sqrt(dvc)
-    ses[(p1 + p2 + 1):no.params] <- exp(coefsd) * sqrt(ses[(p1 + p2 + 1):no.params])
+    ses[(p1 + p2 + 1):no.params] <- exp(coefsd) * (ses[(p1 + p2 + 1):no.params])
   
     names(ses) <- paramnames
    

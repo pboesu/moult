@@ -99,9 +99,9 @@ pers. comm., Jackson 2018).
     \item{coefficients}{parameter estimates split up into duration, mean
       start date and standard deviation of start date.}
     \item{loglik}{log-likelihood at parameter estimates.}
-    \item{vcov}{variance covariance matrix for paramter estimates.}
+    \item{vcov}{variance covariance matrix for paramter estimates (duration, mean start date, SD(start date)).}
     \item{standard.errors}{vector of standard errors for parameter
-      estimates, obtained from diagonal elements of vcov, see details.}
+      estimates, obtained from diagonal elements of vcov, see details (duration, mean start date, SD(start date)).}
     \item{type}{type of data assumed, see details.}
     \item{residuals}{vector of residuals: observed - fitted moult index.}
     \item{fitted.values}{a vector of fitted values (moult scores).}
@@ -124,7 +124,7 @@ pers. comm., Jackson 2018).
 \references{Erni, B., Bonnevie, B. T., Oschadleus, H.-D., Altwegg,
         R. and Underhill, L. G. (2013) moult: An R package to analyze
         moult in birds. \emph{Journal of Statistical Software}, \bold{52}(8), 1--23.
-        \url{http://www.jstatsoft.org/v52/i08/}
+        \url{https://www.jstatsoft.org/v52/i08/}
         
         Jackson, C. 2018. \emph{The moult and migration strategies of Lesser Sand Plover, 
         Greater Sand Plover and Terek Sandpiper.} PhD Thesis, University of Cape Town, 
