@@ -24,7 +24,7 @@
 \source{
   Oschadleus, D. (2005). Patterns of primary moult in weavers. PhD Thesis. University of Cape Town.
   
-  SAFRING, URL: \url{http://safring.adu.org.za/}
+  SAFRING, URL: \url{https://safring.birdmap.africa/}
 }
 
 \examples{
