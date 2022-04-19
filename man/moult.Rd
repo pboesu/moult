@@ -124,7 +124,7 @@ pers. comm., Jackson 2018).
 \references{Erni, B., Bonnevie, B. T., Oschadleus, H.-D., Altwegg,
         R. and Underhill, L. G. (2013) moult: An R package to analyze
         moult in birds. \emph{Journal of Statistical Software}, \bold{52}(8), 1--23.
-        \url{https://www.jstatsoft.org/v52/i08/}
+        \doi{10.18637/jss.v052.i08}
         
         Jackson, C. 2018. \emph{The moult and migration strategies of Lesser Sand Plover, 
         Greater Sand Plover and Terek Sandpiper.} PhD Thesis, University of Cape Town, 

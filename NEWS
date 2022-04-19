@@ -1,5 +1,9 @@
 NEWS for package moult 
 
+moult 2.2.1
+
+- Fixed error in as.vector(data.frame).
+
 moult 2.2.0
 
 - Fixed error in the calculation of SE(SD in start of moult). Thanks to Les Underhill and Tanya Scott for picking this up. 

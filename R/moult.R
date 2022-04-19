@@ -30,7 +30,7 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
   } 
   
   Day <- model.frame(FF, rhs = 1, data = f.dat) 
-  PFMG <- as.vector(model.part(FF, lhs = 1, data = f.dat))
+  PFMG <- model.part(FF, lhs = 1, data = f.dat)
   M0 <- Day[PFMG == 0, 2]
   MInd <- PFMG[PFMG > 0 & PFMG < 1]
   MTime <- Day[PFMG > 0 & PFMG < 1, 2]
