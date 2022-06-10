@@ -9,14 +9,13 @@
              for given covariate patterns}
 
 \usage{
-  \method{predict}{moult}(object, newdata, predict.type = "prob",
-  intervals = 0.1, ...)}
+  \method{predict}{moult}(object, newdata, predict.type = "prob", intervals = 0.1, ...)}
 
 \arguments{
   \item{object}{moult model objects}
   \item{newdata}{optional dataframe with explanatory variables for which to 
-                 make predictions.  Note the first column must contain the days 
-                 (as used when fitting) for which to make predictions.}
+                 make predictions.  The first column must contain the days 
+                 (as used when fitting) for which to make predictions. }
   \item{predict.type}{specifies form of predictions, see details.}
   \item{intervals}{length of moult categories for
     which probabilities/proportions should be calculated.  The default (= 0.1) 
@@ -36,21 +35,23 @@
       is predicted. }
     \item{"duration"}{predicts the duration of moult
       for the covariate combinations defined in \code{newdata},
-      with standard errors.}
+      with standard errors. If \code{newdata} is not supplied, returns duration of baseline covariate set.}
     \item{"start"}{predicts the mean start date of moult
       for the covariate combinations defined in \code{newdata},
-      with standard errors. }
+      with standard errors. If \code{newdata} is not supplied, returns mean start date of baseline covariate set. }
     \item{"both"}{predicts both mean start date of moult and 
       duration of moult for the covariate combinations defined in 
       \code{newdata}, with standard errors. Also, covariance of duration and start date estimates is given.}
   }
 }  
 \value{
-  \item{M}{If \code{predict.type = "response"}, or \code{newdata} is missing, the expected moult scores at the specified days are returned.} 
+  If \code{newdata} is missing, the expected moult scores at the observed days are returned. 
   
-  \item{}{If \code{predict.type = "prob"} a matrix of predicted probabilities for being in each of the moult categories defined by intervals.}
+  If \code{predict.type = "response"}, the expected moult scores at the specified days are returned.
+  
+ If \code{predict.type = "prob"} a matrix of predicted probabilities for being in each of the moult categories defined by intervals.
     
-  \item{}{If \code{predict.type} equals "start" or "duration" or "both", the corresponding estimates (with standard errors) for each of the covariate patterns are returned.}
+  If \code{predict.type} equals "start" or "duration" or "both", the corresponding estimates (with standard errors) for each of the covariate patterns are returned.
 }
 
 \references{Erni, B., Bonnevie, B. T., Oschadleus, H.-D., Altwegg,
@@ -66,33 +67,33 @@
 	strategies and an example using the Redshank \emph{Tringa
 	totanus}. \emph{Ibis} \bold{132}, 118--123. }
 
-\author{Birgit Erni <birgit.erni@uct.ac.za>}
+
+\author{\email{birgit.erni@uct.ac.za}}
 
 \seealso{\code{\link{moult}}}
 \examples{
 
-data(sanderlings)
+data(weavers)
 
-m2 <- moult(MIndex ~ Day, data = sanderlings)                     
-m3 <- moult(MIndex ~ Day, data = sanderlings, type = 3)           
+## convert moult scores to PFMG (proportion feather mass grown)
+mscores <- substr(weavers$Moult, 1, 9)
+feather.mass <- c(10.4, 10.8, 11.5, 12.8, 14.4, 15.6, 16.3, 15.7, 15.7)
+weavers$pfmg <- ms2pfmg(mscores, feather.mass)
 
-## number of birds observed on each of the days
-(nn <- as.numeric(table(sanderlings$Day)))
+## day of year starting 1 August
+weavers$day <- date2days(weavers$RDate, dateformat = "yyyy-mm-dd", startmonth = 8)
+weavers$ssex <- ifelse(weavers$Sex == 1 | weavers$Sex == 3, "male",
+  ifelse(weavers$Sex == 2 | weavers$Sex == 4, "female", NA))
+  
+mmf <- moult(pfmg ~ day | ssex | ssex, data = weavers, type = 3)
+summary(mmf)
 
-## unique observation days 
-(day <- unique(sanderlings$Day))
+## predict duration and start of moult (then both) for males and females
+ssex <- c("male", "female")
+day <- 150
 
-## Table 6 in Underhill and Zucchini 1988
-## expected number of birds in each moult stage on each day
-p1 <- predict(m2, newdata = data.frame(day))        
-p1$M * nn						
-
-## Table 7 in Underhill and Zucchini 1988
-## expected number of birds in each moult stage for days 70 to 310
-days2 <- seq(70, 310, by = 10)
-p2 <- predict(m2, newdata = data.frame(days2))
-p2$M * 100        
-                    
-(p3 <- predict(m3, newdata = data.frame(day)))
+(p1 <- predict.moult(mmf, newdata = data.frame(day, ssex), predict.type = "duration"))
+(p2 <- predict.moult(mmf, newdata = data.frame(day, ssex), predict.type = "start"))
+(p3 <- predict.moult(mmf, newdata = data.frame(day, ssex), predict.type = "both"))
 
 }

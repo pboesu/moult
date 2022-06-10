@@ -108,6 +108,9 @@ pers. comm., Jackson 2018).
     \item{n}{number of observations.}
     \item{df.residual}{residual degrees of freedom for fitted model.}
     \item{terms}{duration formula, mean formula, full formula.}
+    \item{X}{model matrix with covariates.}
+    \item{y}{observed response (moult index) values.}
+    \item{Day}{observed observation days.}
     \item{mean.formula}{model formula for mean start date.}
     \item{duration.formula}{model formula for duration of moult.}
     \item{formula}{model formula for mean start and duration of moult.}
@@ -139,7 +142,7 @@ pers. comm., Jackson 2018).
   an example using the Redshank \emph{Tringa totanus}. \emph{Ibis} \bold{132},
   118--123. }
 
-\author{Birgit.Erni <birgit.erni@uct.ac.za>}
+\author{Birgit Erni \email{birgit.erni@uct.ac.za}}
 
 \seealso{\code{\link{predict.moult}}, \code{\link{ms2pfmg}}}
 \examples{

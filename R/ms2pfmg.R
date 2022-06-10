@@ -9,11 +9,12 @@ ms2pfmg <- function (ms, fm, split = "") {
   
   for (i in 1:length(ms)) {
     if(is.numeric(ms[i]))
-      scores <- format(ms, scientific = FALSE, trim = TRUE)
+      scores <- format(ms[i], scientific = FALSE, trim = TRUE)
     else
       scores <- ms[i]
     
     scores <- unlist(strsplit(scores, split = split))
+    if (any(scores > 5)) warning("Some moult scores > 5, will result in NA \n")
     ind <- match(scores, mscore)     # index
     ind.fm <- ps[ind]   # individual feather mass grown
     pm <- sum(ind.fm * fm) / totalmass
