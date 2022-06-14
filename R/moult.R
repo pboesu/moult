@@ -31,6 +31,9 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
   
   Day <- model.frame(FF, rhs = 1, data = f.dat) 
   PFMG <- model.part(FF, lhs = 1, data = f.dat)
+  
+  if (max(PFMG) > 1) warning("Some moult index values > 1")
+  
   M0 <- Day[PFMG == 0, 2]
   MInd <- PFMG[PFMG > 0 & PFMG < 1]
   MTime <- Day[PFMG > 0 & PFMG < 1, 2]
@@ -48,6 +51,13 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
   sdInd <- matrix(msd[PFMG > 0 & PFMG < 1,], ncol = ncol(msd))
   sd1 <- matrix(msd[PFMG == 1,], ncol = ncol(msd))
 
+  MIndmin <- pmax(0, MInd - prec)
+  MIndmax <- pmin(MInd + prec, 1)
+  
+  n1 <- dim(mf0)[1]
+  n2 <- dim(mfInd)[1]
+  n3 <- dim(mf1)[1]
+  
 	## linear regression (only data of birds actively moulting):
   Flin1 <- lm(MTime ~ MInd)                           
   
@@ -57,234 +67,138 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
  
   no.params <- p1 + p2 + p3
    
-  colnames(md)[1] <- "intercept.1"
-  colnames(mm)[1] <- "intercept"
-
+  colnames(md)[1] <- "duration"
+  colnames(mm)[1] <- "mean-start-day"
+  colnames(msd)[1] <- "SD-start-day"
+  
   paramnames <- c(colnames(md), colnames(mm), colnames(msd))
 
-
-# ----- 1. Construct likelihood function -----
+  lik.P <- function(pdur, pstart, psd) {
+    P.p <- log ( 1 - pnorm(M0, mean = mf0 %*% pstart,
+                           sd = sd0 %*% psd))
+    return(P.p[P.p > -Inf])
+  }
   
-  switch(type,     # --- select likelihood function according to data type (1 to 5)
+  lik.Q <- function(pdur, pstart, psd) {
+    Q <- log(pnorm(MTime, mean = mfInd %*% pstart, 
+                   sd = sdInd %*% psd) - 
+               pnorm(MTime - (dfInd %*% pdur), mean = mfInd %*% pstart, 
+                     sd = sdInd %*% psd))
+  return(Q)
+}
 
-    { # ----- data of type 1 -----
-
-        LogLikM <- function(p, .fixed = fixed, .fixed.val = fixed.val) {
-
-            if (is.null(.fixed)) {
-                params <- p
-            } else {
-                if(length(p) + length(.fixed.val) != length(.fixed))
-                    stop("number of parameters not right, fixed")
-                params <- numeric(length(.fixed))
-                params[.fixed] <- .fixed.val
-                params[!.fixed] <- p
-                params
-            }
-        
-            pdur <- p[1:p1]
-            pstart <- p[(p1 + 1):(p1 + p2)]
-            psd <- exp(p[(p1 + p2 + 1):no.params])
-        
-            P <- sum(log(1 - pnorm(M0, mean = mf0 %*% pstart, 
-                                   sd = sd0 %*% psd )))
-            
-            Q <- sum (log(pnorm(MTime, mean = mfInd %*% pstart, 
-                                sd = sdInd %*% psd) - 
-                          pnorm(MTime - (dfInd %*% pdur), mean = mfInd %*% pstart, 
-                                sd = sdInd %*% psd)))
-   	
-            R <- sum(log(pnorm(M1 - (df1 %*% pdur), mean = mf1 %*% pstart, 
-                               sd = sd1 %*% psd)))
+lik.R <- function(pdur, pstart, psd) {
   
-            loglik <- P + Q + R
-            nobs <- sum(length(M0), length(M1), length(MInd))
-            return(-loglik)
-        }
-    },
-   
-    { # ----- data of type 2 -----
-        LogLikM <- function(p, .fixed = fixed, .fixed.val = fixed.val) {
+  R <- log(pnorm(M1 - (df1 %*% pdur), mean = mf1 %*% pstart, 
+                 sd = sd1 %*% psd))
+  return(R)
+}
 
-            if (is.null(.fixed)) {
-                params <- p
-            } else {
-                if(length(p) + length(.fixed.val) != length(.fixed))
-                    stop("number of parameters not right, fixed")
-                params <- numeric(length(.fixed))
-                params[.fixed] <- .fixed.val
-                params[!.fixed] <- p
-                params
-            }
-        
-            pdur <- p[1:p1]
-            pstart <- p[(p1 + 1):(p1 + p2)]
-            psd <- exp(p[(p1 + p2 + 1):no.params])
-        
-            P.p <- log ( 1 - pnorm(M0, mean = mf0 %*% pstart,
-                                   sd = sd0 %*% psd))
-            P <- sum(P.p[P.p > -Inf])
-   
-            MIndmin <- pmax(0, MInd - prec)
-            MIndmax <- pmin(MInd + prec, 1)
+lik.q <- function(pdur, pstart, psd) {
+  q <- log(pnorm(MTime - MIndmin * (dfInd %*% pdur),
+                 mean = mfInd %*% pstart, 
+                 sd = sdInd %*% psd) -
+             pnorm(MTime - MIndmax * (dfInd %*% pdur),
+                   mean = mfInd %*% pstart, 
+                   sd = sdInd %*% psd))
+  return(q)
+}
+
+lik.P1 <- function(pdur, pstart, psd) {
+  P1 <- log (pnorm(MTime, mean = mfInd %*% pstart,
+                   sd = sdInd %*% psd))
+  return(P1)
+}
+
+lik.P2 <- function(pdur, pstart, psd) {
+  P2 <- log (pnorm(M1, mean = mf1 %*% pstart, 
+                   sd = sd1 %*% psd))
+  return(P2)
+}
+
+lik.R1 <- function(pdur, pstart, psd) {
+  R1 <- log ( 1 - pnorm (M0 - (df0 %*% pdur), 
+                         mean = mf0 %*% pstart, 
+                         sd = sd0 %*% psd))
+  return(R1)
+}
+
+lik.R2 <- function(pdur, pstart, psd) {
+  R2 <- log (1 - pnorm (MTime - (dfInd %*% pdur), 
+                        mean = mfInd %*% pstart, 
+                        sd = sdInd %*% psd))
+  return(R2)
+}
+
+
+  # ----- 1. Construct likelihood function -----
   
-            q <- sum(log(pnorm(MTime - MIndmin * (dfInd %*% pdur),
-                               mean = mfInd %*% pstart, 
-                               sd = sdInd %*% psd) -
-                         pnorm(MTime - MIndmax * (dfInd %*% pdur),
-                               mean = mfInd %*% pstart, 
-                               sd = sdInd %*% psd)))
-              
-            R <- sum ( log ( pnorm (M1 - (df1 %*% pdur), mean = mf1 %*% pstart, 
-                                    sd = sd1 %*% psd) ))
-
-            loglik <- P + q + R
-            return(-loglik)
-        }
-    },
-
-    { # ----- data of type 3 -----
-        
-      LogLikM <- function(p, .fixed = fixed, .fixed.val = fixed.val) {
-
-          if (is.null(.fixed)) {
-              params <- p
-          } else {
-              if(length(p) + length(.fixed.val) != length(.fixed))
-                  stop("number of parameters not right, fixed")
-              params <- numeric(length(.fixed))
-              params[.fixed] <- .fixed.val
-              params[!.fixed] <- p
-              params
-          }
-        
-          pdur <- params[1:p1]
-          pstart <- params[(p1 + 1):(p1 + p2)]
-          psd <- exp(params[(p1 + p2 + 1):no.params]  )
-        
-          MIndmin <- pmax(0, MInd - prec)
-          MIndmax <- pmin(MInd + prec, 1)
-       
-          qq <- sum(log(pnorm(MTime - MIndmin * (dfInd %*% pdur),
-                              mean = mfInd %*% pstart, 
-                              sd = sdInd %*% psd) -
-                        pnorm(MTime - MIndmax * (dfInd %*% pdur),
-                              mean = mfInd %*% pstart, 
-                              sd = sdInd %*% psd)))
-      
-          Q <- sum(log(pnorm(MTime, mean = mfInd %*% pstart,
-                             sd = sdInd %*% psd) - 
-                       pnorm(MTime - (dfInd %*% pdur),
-                             mean = mfInd %*% pstart,
-                             sd = sdInd %*% psd)))
-
-          if (!is.na(Q) & !is.na(qq)) {
-            if (Q < qq) {
-              stop("Q < qq, type 3")
-              cat(list(Q = Q, qq = qq, params = params))
-            }
-          }
-          nobs <- length(MInd)
-          loglik <- qq - Q                      # eq.6
-          return(-loglik)
-      }
-    },
-
-    { # ----- data of type 4 -----
-
-        LogLikM <- function(p, .fixed = fixed, .fixed.val = fixed.val) {
-
-            if (is.null(.fixed)) {
-                params <- p
-            } else {
-                if(length(p) + length(.fixed.val) != length(.fixed))
-                    stop("number of parameters not right, fixed")
-                params <- numeric(length(.fixed))
-                params[.fixed] <- .fixed.val
-                params[!.fixed] <- p
-                params
-            }
-        
-        
-            pdur <- p[1:p1]
-            pstart <- p[(p1 + 1):(p1 + p2)]
-            psd <- exp(p[(p1 + p2 + 1):no.params])
- 	
-            MIndmin <- pmax(0, MInd - prec)
-            MIndmax <- pmin(MInd + prec, 1)
-       
-            qq <- sum(log(pnorm(MTime - MIndmin * (dfInd %*% pdur),
-                                mean = mfInd %*% pstart, 
-                                sd = sdInd %*% psd) -
-                          pnorm(MTime - MIndmax * (dfInd %*% pdur),
-                                mean = mfInd %*% pstart, 
-                                sd = sdInd %*% psd)))
-  
-            P1 <- sum ( log (pnorm(MTime, mean = mfInd %*% pstart,
-                                   sd = sdInd %*% psd)))
-            
-            R <- sum ( log ( pnorm (M1 - (df1 %*% pdur), 
-                                    mean = mf1 %*% pstart, 
-                                    sd = sd1 %*% psd) ))
-
-            P2 <- sum ( log (pnorm(M1, mean = mf1 %*% pstart, 
-                                   sd = sd1 %*% psd)))
-
-            nobs <- sum(length(M1), length(MInd))
-            loglik <- qq - P1 + R - P2
-            return(-loglik)
-        }
-    },
-
-    { # ----- data of type 5 -----
-
-        LogLikM <- function(p, .fixed = fixed, .fixed.val = fixed.val) {
-
-            if (is.null(.fixed)) {
-                params <- p
-            } else {
-                if(length(p) + length(.fixed.val) != length(.fixed))
-                    stop("number of parameters not right, fixed")
-                params <- numeric(length(.fixed))
-                params[.fixed] <- .fixed.val
-                params[!.fixed] <- p
-                params
-            }
-            
-            pdur <- p[1:p1]
-            pstart <- p[(p1 + 1):(p1 + p2)]
-            psd <- exp(p[(p1 + p2 + 1):no.params])
-        
-            P <- sum ( log ( 1 - pnorm(M0, mean = mf0 %*% pstart, 
-                                       sd = sd0 %*% psd)))
+  LogLikM <- function(p, .fixed = fixed, .fixed.val = fixed.val) {
     
-            R1 <- sum ( log ( 1 - pnorm (M0 - (df0 %*% pdur), 
-                                         mean = mf0 %*% pstart, 
-                                         sd = sd0 %*% psd) ))
-
-            MIndmin <- pmax(0, MInd - prec)
-            MIndmax <- pmin(MInd + prec, 1)
-       
-            qq <- sum(log(pnorm(MTime - MIndmin * (dfInd %*% pdur),
-                                mean = mfInd %*% pstart, 
-                                sd = sdInd %*% psd) -
-                          pnorm(MTime - MIndmax * (dfInd %*% pdur),
-                                mean = mfInd %*% pstart, 
-                                sd = sdInd %*% psd)))
-  
-            R2 <- sum ( log (1 - pnorm (MTime - (dfInd %*% pdur), 
-                                        mean = mfInd %*% pstart, 
-                                        sd = sdInd %*% psd) ))
-
-            nobs <- sum(length(M0), length(MInd))
-            loglik <- P - R1 + qq - R2
-            return(-loglik)
-        }
-    },
+    if (is.null(.fixed)) {
+      params <- p
+    } else {
+      if(length(p) + length(.fixed.val) != length(.fixed))
+        stop("number of parameters not right, fixed")
+      params <- numeric(length(.fixed))
+      params[.fixed] <- .fixed.val
+      params[!.fixed] <- p
+      params
+    }
     
-    print("moult: not a valid data type") ) # --- end of switch
-
-    nobs <- switch(type,
+    pdur <- p[1:p1]
+    pstart <- p[(p1 + 1):(p1 + p2)]
+    psd <- exp(p[(p1 + p2 + 1):no.params])
+ 
+    switch(type,
+             { P <- sum(lik.P(pdur, pstart, psd))
+               Q <- sum(lik.Q(pdur, pstart, psd))
+               R <- sum(lik.R(pdur, pstart, psd))
+               loglik <- P + Q + R  # type 1
+               return(-loglik) 
+             },
+             
+             { P <- sum(lik.P(pdur, pstart, psd))
+               q <- sum(lik.q(pdur, pstart, psd))
+               R <- sum(lik.R(pdur, pstart, psd))
+               loglik <- P + q + R   # type 2
+               return(-loglik) 
+             },
+             
+             { q <- sum(lik.q(pdur, pstart, psd))
+               Q <- sum(lik.Q(pdur, pstart, psd))
+          
+               if (!is.na(Q) & !is.na(q)) {
+                 if (Q < q) {
+                   stop("Q < qq, type 3")
+                   cat(list(Q = Q, q = q, params = params))
+                 }
+               }
+               loglik <- q - Q                      # type 3
+               return(-loglik)
+             },
+             
+             { P1 <- sum(lik.P1(pdur, pstart, psd))
+               P2 <- sum(lik.P2(pdur, pstart, psd))
+               q <- sum(lik.q(pdur, pstart, psd))
+               R <- sum(lik.R(pdur, pstart, psd))
+               
+               loglik <- q - P1 + R - P2           # type 4
+               return(-loglik)
+             },
+             
+             { R1 <- sum(lik.R1(pdur, pstart, psd))
+               R2 <- sum(lik.R2(pdur, pstart, psd))
+               q <- sum(lik.q(pdur, pstart, psd))
+               P <- sum(lik.P(pdur, pstart, psd))
+             
+               loglik <- P - R1 + q - R2                     # type 5
+               return(-loglik)
+             },
+             
+             print("moult: not a valid data type") ) # --- end of switch)
+}
+      nobs <- switch(type,
                    sum(length(M0), length(M1), length(MInd)), 
                    sum(length(M0), length(M1), length(MInd)),
                    length(MInd),
@@ -315,8 +229,6 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
                  paste("s.", colnames(mm), sep = ""), 
                  paste("sd.", colnames(msd), sep = ""))
     
-    #names(fit$par) <- paramnames
-
     p.est <- numeric(length(no.params))
     if (!is.null(fixed)) {
         p.est[!fixed] <- fit$par
@@ -327,10 +239,6 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
     
     names(p.est) <- paramnames
     
-    out <- list("estimates" = p.est, "likelihood" = -fit$value,
-                "convergence" = fit$convergence, 
-                "message" = fit$message, "hessian" = fit$hessian)
-  
     coefd <- p.est[1:p1]
     coefm <- p.est[(p1 + 1):(p1 + p2)]
     coefsd <- p.est[(p1 + p2 + 1):no.params]
@@ -345,6 +253,7 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
                                  - mean.est / dur.est + 1 / dur.est * Day[, 2]))
     residuals <- PFMG - moult.est
 
+    
     H.inv <- solve(fit$hessian)
 
     vcov <- matrix(0, nrow = no.params, ncol = no.params)
@@ -381,11 +290,14 @@ moult <- function(formula, data = NULL, start = NULL, type = 2, method = "BFGS",
                 terms = list(full = FF, duration = formula.duration, mean = formula.mean,
                              sd = formula.sd), 
                 call = call,
+                X = mf,
+                y = PFMG,
+                Day = Day[, 2],
                 formula = FF, 
                 optim = fit,             
                 converged = fit$convergence < 1,
                 convergence.value = fit$convergence)
-    
+
     class(out) <- "moult"
     return(out)
 }

@@ -1,5 +1,13 @@
 NEWS for package moult 
 
+moult 2.3.0
+
+- Added bootstrap confidence intervals (confint.moult function), estimates of covariance matrix and standard errors.
+- Added dfbeta.moult function to check influence of individual observations.
+- Updated predict.moult function.
+- Components for likelihood function are calculated once and components to return are selected depending on type. 
+- Fixed format error in help files.
+
 moult 2.2.1
 
 - Fixed error in as.vector(data.frame).

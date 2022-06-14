@@ -2,9 +2,12 @@ import(Formula)
 
 importFrom(Matrix,bdiag)
 importFrom("stats", coef, lm, model.frame, model.matrix,
-           na.omit, optim, pnorm, printCoefmat, sd, update)
+           na.omit, optim, pnorm, printCoefmat, sd, update, 
+           plot.ts, quantile, var, dfbeta)
+importFrom("graphics", "abline", "legend", "pairs")
 
-export("moult", "date2days", "ms2pfmg", "predict.moult", "moult_alternative") 
+export("moult", "date2days", "ms2pfmg", "predict.moult", "moult_alternative", 
+       "confint.moult", "dfbeta.moult") 
 
 S3method("print", "moult")
 S3method("predict", "moult")
@@ -13,4 +16,5 @@ S3method("logLik", "moult")
 S3method("vcov", "moult")
 S3method("print", "summary.moult")
 S3method("coef", "moult")
-
+S3method("confint", "moult")
+S3method("dfbeta", "moult")
