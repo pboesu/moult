@@ -38,6 +38,6 @@ In the optional plot of dfbetas, cutoff lines at \eqn{\pm 2 / \sqrt{n}} are adde
 \examples{
 data(sanderlings)
 m2 <- moult(MIndex ~ Day, data = sanderlings) 
-dfbeta(m2)
+\dontrun{dfbeta(m2)}
 }
 

@@ -30,5 +30,5 @@ Calculate normal theory and bootstrap percentile intervals for moult parameters.
 \examples{
 data(sanderlings)
 m2 <- moult(MIndex ~ Day, data = sanderlings)
-confint(m2, B = 100) # increase B for better precision
+\dontrun{confint(m2, B = 100) # increase B for better precision}
 }
